@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAAS - Sign Up for Premium Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+            background: white;
+            padding: 0 10px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-number {
+            background: #667eea;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #4caf50;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.85em;
+            color: #666;
+            text-align: center;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .billing-toggle-container {
+            margin-bottom: 30px;
+        }
+
+        .billing-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .billing-option {
+            flex: 0 1 200px;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .billing-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .billing-option.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .billing-label {
+            font-weight: 600;
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        .billing-savings {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+
+        .billing-note {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .billing-option.active .billing-note {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .billing-info {
+            font-size: 0.85em;
+            color: #4caf50;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .service-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .service-card.enterprise-card {
+            cursor: default;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .service-card.enterprise-card:hover {
+            border-color: #764ba2;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.2);
+        }
+
+        .service-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .service-card.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .service-card input[type="checkbox"] {
+            width: auto;
+            margin-bottom: 10px;
+        }
+
+        .service-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .service-price {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .terms-box {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px solid #e0e0e0;
+        }
+
+        .terms-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .terms-box p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .summary-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .error {
+            color: #f44336;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-message h2 {
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>VAAS</h1>
+            <p>Sign up for premium email automation services</p>
+        </div>
+
+        <div class="form-container">
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Account Info</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Select Services</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Review & Agree</div>
+                </div>
+            </div>
+
+            <form id="signupForm">
+                <!-- Step 1: Account Information -->
+                <div class="form-section active" data-section="1">
+                    <h2 style="margin-bottom: 30px; color: #333;">Account Information</h2>
+                    
+                    <div class="form-group">
+                        <label for="fullName">Full Name *</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                        <span class="error" id="nameError">Please enter your full name</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                        <span class="error" id="emailError">Please enter a valid email address</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                        <span class="error" id="phoneError">Please enter a valid phone number</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company">Company Name (Optional)</label>
+                        <input type="text" id="company" name="company">
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-primary" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Select Services -->
+                <div class="form-section" data-section="2">
+                    <h2 style="margin-bottom: 20px; color: #333;">Select Your Services</h2>
+                    
+                    <!-- Billing Toggle -->
+                    <div class="billing-toggle-container">
+                        <div class="billing-toggle">
+                            <button type="button" class="billing-option active" data-billing="annual" onclick="toggleBilling('annual')">
+                                <div class="billing-label">Annual Billing</div>
+                                <div class="billing-savings">Save $180/year</div>
+                            </button>
+                            <button type="button" class="billing-option" data-billing="monthly" onclick="toggleBilling('monthly')">
+                                <div class="billing-label">Monthly Billing</div>
+                                <div class="billing-note">+$15/month</div>
+                            </button>
+                        </div>
+                        <p style="text-align: center; color: #4caf50; font-weight: 600; margin-top: 10px; font-size: 0.95em;">
+                            💰 Best Value: Save $180 per year with annual billing!
+                        </p>
+                    </div>
+                    
+                    <div class="service-grid" id="serviceGrid">
+                        <div class="service-card" onclick="toggleService(this, 'basic')">
+                            <input type="checkbox" name="services" value="basic">
+                            <div class="service-name">Basic Email Assistant</div>
+                            <div class="service-price" data-annual="49" data-monthly="64">$49/month</div>
+                            <div class="billing-info">Billed annually at $588</div>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 10px;">750 emails/month - Automated campaigns & follow-ups</p>
+                        </div>
+
+                        <div class="service-card" onclick="toggleService(this, 'pro')">
+                            <input type="checkbox" name="services" value="pro">
+                            <div class="service-name">Pro Email Leader</div>
+                            <div class="service-price" data-annual="109" data-monthly="124">$109/month</div>
+                            <div class="billing-info">Billed annually at $1,308</div>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 10px;">2,000 emails/month - Advanced automation & sequences</p>
+                        </div>
+
+                        <div class="service-card enterprise-card" onclick="handleEnterpriseClick(event)">
+                            <div class="service-name">Enterprise</div>
+                            <div class="service-price">Custom Pricing</div>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 10px;">Custom volume - Contact sales at support@vaaslab.com</p>
+                        </div>
+                    </div>
+
+                    <span class="error" id="serviceError" style="display: block; margin-top: 15px;">Please select at least one service</span>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-secondary" onclick="prevStep()">Back</button>
+                        <button type="button" class="btn-primary" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Review & Terms -->
+                <div class="form-section" data-section="3">
+                    <h2 style="margin-bottom: 30px; color: #333;">Review & Terms</h2>
+                    
+                    <div class="summary-section">
+                        <h3 style="margin-bottom: 15px; color: #667eea;">Order Summary</h3>
+                        <div class="summary-item">
+                            <span>Name:</span>
+                            <span id="summaryName"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Email:</span>
+                            <span id="summaryEmail"></span>
+                        </div>
+                        <div id="summaryServices"></div>
+                        <div class="summary-item">
+                            <span>Total Monthly:</span>
+                            <span id="summaryTotal">$0</span>
+                        </div>
+                    </div>
+
+                    <div class="terms-box">
+                        <h3>VAAS Email Automation – Terms & Conditions</h3>
+                        
+                        <p><strong>1. Service Description:</strong> The VAAS Email Automation Service provides automated outbound email campaigns, follow-up sequences, and related marketing automation tools. Monthly email quotas: Starter (750 emails), Growth (2,000 emails), Enterprise (custom volume by contract).</p>
+                        
+                        <p><strong>2. Subscription Billing:</strong> All subscriptions are billed monthly in advance through Stripe. Your billing cycle begins immediately upon successful payment. Pricing: Starter ($50/month), Growth ($110/month), Enterprise (custom pricing). If payment fails, we will attempt collection for up to 7 days before pausing your Service.</p>
+                        
+                        <p><strong>3. Email Sending Limits & No-Overage Policy:</strong> Each plan includes a fixed monthly allocation. Once your limit is reached, additional emails will not be sent. There are no per-email overage charges. If you consistently exceed your limit, you must upgrade to a higher tier before additional sending capacity is unlocked.</p>
+                        
+                        <p><strong>4. Compliance With Email Laws:</strong> You must comply with CAN-SPAM Act, TCPA, GDPR, and CASL. This includes sending only to contacts who provided consent, including unsubscribe links, and maintaining accurate sender information. You are solely responsible for email content.</p>
+                        
+                        <p><strong>5. Prohibited Use:</strong> The Service may not be used for spam, unsolicited mass emailing, purchasing/scraping email lists, sending harmful or fraudulent content, or abusive campaigns. We reserve the right to suspend or terminate accounts violating these terms.</p>
+                        
+                        <p><strong>6. Data Accuracy:</strong> You are responsible for providing accurate business and billing information, maintaining updated payment details, and ensuring your email contact list is compliant and legally obtained.</p>
+                        
+                        <p><strong>7. Service Availability:</strong> We do not guarantee uninterrupted or error-free operation. We may perform scheduled or emergency maintenance. We are not liable for delays, outages, or deliverability issues caused by third-party providers.</p>
+                        
+                        <p><strong>8. Cancellations & Refunds:</strong> You may cancel anytime through your customer portal or by contacting support@vaaslab.com. All fees are non-refundable, including partial months, unused email capacity, and early cancellations. Your Service remains active until the end of your billing period.</p>
+                        
+                        <p><strong>9. Suspension & Termination:</strong> We may suspend or terminate your Service if billing fails repeatedly, you exceed plan limits without upgrading, engage in spam/fraud/prohibited activity, or violate email compliance laws.</p>
+                        
+                        <p><strong>10. Data & Privacy:</strong> We store campaign performance data and metadata for operational purposes. We do not sell or share your customer lists with third parties. Full details are in our Privacy Policy.</p>
+                        
+                        <p><strong>11. Modifications:</strong> We may update these Terms periodically. Your continued use after updates constitutes acceptance of revised Terms.</p>
+                        
+                        <p><strong>Contact:</strong> For questions or support, email support@vaaslab.com or visit https://vaaslab.com</p>
+                        
+                        <p style="margin-top: 15px; font-size: 0.85em; color: #999;">By subscribing to or using the VAAS Email Automation Service provided by VAAS / VAASLab (Ibrar AI Studio LLC), you agree to these Terms & Conditions.</p>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="agreeTerms" required>
+                        <label for="agreeTerms">I have read and agree to the Terms and Conditions *</label>
+                    </div>
+                    <span class="error" id="termsError">You must agree to the terms and conditions</span>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-secondary" onclick="prevStep()">Back</button>
+                        <button type="submit" class="btn-primary">Proceed to Payment</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let formData = {
+            services: [],
+            totalPrice: 0
+        };
+
+        function nextStep() {
+            if (validateStep(currentStep)) {
+                document.querySelector(`.form-section[data-section="${currentStep}"]`).classList.remove('active');
+                document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('completed');
+                document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+                
+                currentStep++;
+                
+                document.querySelector(`.form-section[data-section="${currentStep}"]`).classList.add('active');
+                document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+                
+                if (currentStep === 3) {
+                    updateSummary();
+                }
+                
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function prevStep() {
+            document.querySelector(`.form-section[data-section="${currentStep}"]`).classList.remove('active');
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+            
+            currentStep--;
+            
+            document.querySelector(`.form-section[data-section="${currentStep}"]`).classList.add('active');
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('completed');
+            
+            window.scrollTo(0, 0);
+        }
+
+        function validateStep(step) {
+            let isValid = true;
+            
+            if (step === 1) {
+                const name = document.getElementById('fullName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                
+                if (!name) {
+                    document.getElementById('nameError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('nameError').style.display = 'none';
+                }
+                
+                if (!email || !email.includes('@')) {
+                    document.getElementById('emailError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('emailError').style.display = 'none';
+                }
+                
+                if (!phone) {
+                    document.getElementById('phoneError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('phoneError').style.display = 'none';
+                }
+            }
+            
+            if (step === 2) {
+                const selectedServices = document.querySelectorAll('input[name="services"]:checked');
+                if (selectedServices.length === 0) {
+                    document.getElementById('serviceError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('serviceError').style.display = 'none';
+                }
+            }
+            
+            return isValid;
+        }
+
+        function toggleService(card, serviceId, price) {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                card.classList.add('selected');
+                formData.services.push({ id: serviceId, price: price, name: card.querySelector('.service-name').textContent });
+            } else {
+                card.classList.remove('selected');
+                formData.services = formData.services.filter(s => s.id !== serviceId);
+            }
+            
+            formData.totalPrice = formData.services.reduce((sum, service) => sum + service.price, 0);
+        }
+
+        function handleEnterpriseClick(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (confirm('Enterprise plan requires custom pricing. Would you like to contact our sales team at support@vaaslab.com?')) {
+                window.location.href = 'mailto:support@vaaslab.com?subject=Enterprise Plan Inquiry&body=Hi, I am interested in learning more about the Enterprise email automation plan.';
+            }
+        }
+
+        function updateSummary() {
+            document.getElementById('summaryName').textContent = document.getElementById('fullName').value;
+            document.getElementById('summaryEmail').textContent = document.getElementById('email').value;
+            
+            const servicesContainer = document.getElementById('summaryServices');
+            servicesContainer.innerHTML = '';
+            
+            formData.services.forEach(service => {
+                const serviceItem = document.createElement('div');
+                serviceItem.className = 'summary-item';
+                serviceItem.innerHTML = `
+                    <span>${service.name}</span>
+                    <span>$${service.price}/month</span>
+                `;
+                servicesContainer.appendChild(serviceItem);
+            });
+            
+            document.getElementById('summaryTotal').textContent = `$${formData.totalPrice}/month`;
+        }
+
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+            if (!agreeTerms) {
+                document.getElementById('termsError').style.display = 'block';
+                return;
+            }
+            document.getElementById('termsError').style.display = 'none';
+            
+            // Collect all form data
+            const customerData = {
+                name: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                company: document.getElementById('company').value,
+                services: formData.services,
+                totalPrice: formData.totalPrice
+            };
+            
+            // Store in localStorage for Stripe page
+            localStorage.setItem('vaasCustomerData', JSON.stringify(customerData));
+            
+            // Redirect to Stripe subscription page
+            // Replace this URL with your actual Stripe payment link or checkout session
+            window.location.href = 'https://buy.stripe.com/YOUR_STRIPE_PAYMENT_LINK';
+            
+            // For testing purposes, you can comment out the above line and uncomment below:
+            // alert('Form submitted! Customer data saved. In production, this would redirect to Stripe.');
+            // console.log('Customer Data:', customerData);
+        });
+
+        // Prevent checkbox toggle when clicking the checkbox itself
+        document.querySelectorAll('.service-card input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
+</body>
+</html>
